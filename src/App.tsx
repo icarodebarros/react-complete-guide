@@ -4,12 +4,18 @@ import Person from './Person/Person';
 
 import './App.css';
 
+interface IPerson {
+  id: number;
+  name: string;
+  age: number;
+}
+
 function App(): JSX.Element {
-  const [personsState, setPersonsState] = useState({
+  const [personsState, setPersonsState] = useState<{persons: IPerson[]}>({
     persons: [
-      { name: 'Max', age: 28 },
-      { name: 'Maanu', age: 29 },
-      { name: 'Stephanie', age: 26 }
+      { id: 1, name: 'Max', age: 28 },
+      { id: 2, name: 'Maanu', age: 29 },
+      { id: 3, name: 'Stephanie', age: 26 }
     ],
     // otherAtribute: 'some value' // DON'T USE BIG STATES
   });
@@ -17,27 +23,49 @@ function App(): JSX.Element {
   // USE MULTIPLE AND SMALLER STATES
   // const [otherState, setOtherState] = useState('some value');
 
-  const switchNameHandler = (newName: string) => {
-    // DON'T DO THIS: this.state.persons[0].name = 'Maximilian';
-    setPersonsState({
-      persons: [
-        { name: newName, age: 28 },
-        { name: 'Maanu', age: 29 },
-        { name: 'Stephanie', age: 27 }
-      ],
-      // otherAtribute: personsState.otherAtribute // Must pass the full 'state'
-    });
+  const [showPersons, setShowPersons] = useState(false);
+
+  const deletePersonHandler = (personIndex: number) => {
+    const persons = [...personsState.persons];
+    persons.splice(personIndex, 1);
+    setPersonsState({ persons });
   };
 
-  const nameChangedHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPersonsState({
-      persons: [
-        { name: 'Max', age: 28 },
-        { name: event.target.value, age: 29 },
-        { name: 'Stephanie', age: 26 }
-      ]
-    });
+  const nameChangedHandler = (event: React.ChangeEvent<HTMLInputElement>, personIndex: number) => {
+    const person: IPerson = {...personsState.persons[personIndex]};
+    person.name = event.target.value;
+
+    const persons = [...personsState.persons];
+    persons[personIndex] = person;
+    
+    setPersonsState({ persons });
   };
+  
+  const togglePersonsHandler = () => {
+    setShowPersons(!showPersons);    
+  };
+  
+
+  let persons = null;
+  if (showPersons) {
+    persons = (
+      <div>
+        {
+          personsState.persons.map((person: IPerson, index: number) => {
+            return (
+              <Person
+                key={person.id}
+                name={person.name} 
+                age={person.age}
+                click={() => deletePersonHandler(index)}
+                changed={(event) => nameChangedHandler(event, index)}
+              />
+            );
+          })
+        }
+      </div>
+    );
+  }
 
   const style = {
     backgroundColor: 'white',
@@ -51,18 +79,8 @@ function App(): JSX.Element {
     <div className="App">
         <h1 >Hi, I&apos;m a React App</h1>
         <p>This is really working!</p>
-        <button style={style} onClick={() => switchNameHandler('Maximilian')}>Switch name</button>
-        <Person 
-          name={personsState.persons[0].name} 
-          age={personsState.persons[0].age} />
-        <Person 
-          name={personsState.persons[1].name} 
-          age={personsState.persons[1].age}
-          click={switchNameHandler.bind(globalThis, 'Max!')}
-          changed={nameChangedHandler}>My hobbies: coding</Person>
-        <Person 
-          name={personsState.persons[2].name} 
-          age={personsState.persons[2].age} />
+        <button style={style} onClick={togglePersonsHandler}>Toggle Persons</button>
+        { persons }
     </div>
   );
   // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Hi, I\'m a React App!!'));

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import Person from './Person/Person';
 
-import './App.css';
+import classes from './App.module.css';
 
 interface IPerson {
   id: number;
@@ -44,9 +44,10 @@ function App(): JSX.Element {
   const togglePersonsHandler = () => {
     setShowPersons(!showPersons);    
   };
-  
 
   let persons = null;
+  const btnClass = [classes.Button];
+
   if (showPersons) {
     persons = (
       <div>
@@ -65,21 +66,26 @@ function App(): JSX.Element {
         }
       </div>
     );
+
+    btnClass.push(classes.Red);
   }
 
-  const style = {
-    backgroundColor: 'white',
-    font: 'innerit',
-    border: '1px solid blue',
-    padding: '8px',
-    cursor: 'pointer'
-  };
+  const assignedClasses = [];
+  if (personsState.persons.length <= 2) {
+    assignedClasses.push(classes.red);
+    if (personsState.persons.length <= 1) {
+      assignedClasses.push(classes.bold);
+    }
+  }
 
   return (
-    <div className="App">
+    <div className={classes.App}>
         <h1 >Hi, I&apos;m a React App</h1>
-        <p>This is really working!</p>
-        <button style={style} onClick={togglePersonsHandler}>Toggle Persons</button>
+        <p className={assignedClasses.join(' ')}>This is really working!</p>
+
+        <button className={btnClass.join(' ')} onClick={togglePersonsHandler}>
+          Toggle Persons
+        </button>
         { persons }
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from 'react';
-import './Person.css';
+
+import classes from './Person.module.css';
 
 interface personProps {
     name: string;
@@ -10,7 +11,7 @@ interface personProps {
 
 const person: React.FC<personProps> = (props: PropsWithChildren<personProps>) => {
     return (
-        <div className="Person">
+        <div className={classes.Person}>
             <p onClick={props.click} >I&apos;m a Person! My name is {props.name}, and I have {props.age} years old!</p>
             <p>{props.children}</p>
             <input type="text" onChange={props.changed} value={props.name} />

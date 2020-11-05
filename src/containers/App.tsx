@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
+import Cockpit from '../components/Cockpit/Cockpit';
 
-import Person from './Person/Person';
-// import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
+import Persons from '../components/Persons/Persons';
+import { IPerson } from '../components/Persons/Persons';
+// import ErrorBoundary from '../util/ErrorBoundary/ErrorBoundary';
 
 import classes from './App.module.css';
 
-interface IPerson {
-  id: number;
-  name: string;
-  age: number;
+interface appProps {
+  appTitle: string;
 }
 
-function App(): JSX.Element {
+function App(props: appProps): JSX.Element {
   const [personsState, setPersonsState] = useState<{persons: IPerson[]}>({
     persons: [
       { id: 1, name: 'Max', age: 28 },
@@ -47,48 +47,24 @@ function App(): JSX.Element {
   };
 
   let persons = null;
-  const btnClass = [classes.Button];
-
   if (showPersons) {
     persons = (
-      <div>
-        {
-          personsState.persons.map((person: IPerson, index: number) => {
-            return (
-              // <ErrorBoundary key={person.id}>
-              <Person
-                key={person.id}
-                name={person.name} 
-                age={person.age}
-                click={() => deletePersonHandler(index)}
-                changed={(event) => nameChangedHandler(event, index)}
-              />
-              // </ErrorBoundary>
-            );
-          })
-        }
-      </div>
+      <Persons
+        persons={personsState.persons}
+        clicked={deletePersonHandler}
+        changed={nameChangedHandler}
+      />
     );
-
-    btnClass.push(classes.Red);
-  }
-
-  const assignedClasses = [];
-  if (personsState.persons.length <= 2) {
-    assignedClasses.push(classes.red);
-    if (personsState.persons.length <= 1) {
-      assignedClasses.push(classes.bold);
-    }
   }
 
   return (
     <div className={classes.App}>
-        <h1 >Hi, I&apos;m a React App</h1>
-        <p className={assignedClasses.join(' ')}>This is really working!</p>
-
-        <button className={btnClass.join(' ')} onClick={togglePersonsHandler}>
-          Toggle Persons
-        </button>
+      <Cockpit
+        persons={personsState.persons}
+        showPersons={showPersons}
+        clicked={togglePersonsHandler}
+        title={props.appTitle}
+      />
         { persons }
     </div>
   );
